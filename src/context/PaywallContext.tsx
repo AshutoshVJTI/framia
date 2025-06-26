@@ -1,155 +1,179 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useAuth } from './AuthContext';
+import { UserSubscription } from '@/lib/firebase';
 
 interface PaywallContextType {
   isSubscribed: boolean;
   isLoading: boolean;
   remainingGenerations: number;
   showPaywall: boolean;
+  subscription: UserSubscription | null;
   openCheckout: () => void;
   resetRemainingGenerations: () => void;
   consumeGeneration: () => void;
   closePaywall: () => void;
-  // For demo/testing only
-  simulateSuccessfulSubscription: () => void;
-  // Force refresh subscription status
   refreshSubscriptionStatus: () => void;
+  // For demo/testing only - remove in production
+  simulateSuccessfulSubscription: () => void;
 }
 
-const PaywallContext = createContext<PaywallContextType>({
-  isSubscribed: false,
-  isLoading: true,
-  remainingGenerations: 0,
-  showPaywall: false,
-  openCheckout: () => {},
-  resetRemainingGenerations: () => {},
-  consumeGeneration: () => {},
-  closePaywall: () => {},
-  simulateSuccessfulSubscription: () => {},
-  refreshSubscriptionStatus: () => {},
-});
+const PaywallContext = createContext<PaywallContextType | undefined>(undefined);
 
-export const usePaywall = () => useContext(PaywallContext);
+export const usePaywall = (): PaywallContextType => {
+  const context = useContext(PaywallContext);
+  if (!context) {
+    throw new Error('usePaywall must be used within a PaywallProvider');
+  }
+  return context;
+};
 
 export const PaywallProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [remainingGenerations, setRemainingGenerations] = useState(0);
   const [showPaywall, setShowPaywall] = useState(false);
   
-  // Free tier allows 3 generations
-  const FREE_TIER_LIMIT = 3;
-
-  // Initialize paywall based on user
-  useEffect(() => {
-    if (!user) {
+  // Fetch subscription data from API
+  const fetchSubscription = useCallback(async () => {
+    if (!user?.uid) {
       setIsLoading(false);
       return;
     }
 
-    const checkSubscriptionStatus = async () => {
-      setIsLoading(true);
-      try {
-        // Check URL parameters for successful checkout
-        const urlParams = new URLSearchParams(window.location.search);
-        const checkoutSuccess = urlParams.get('checkout_success');
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/subscription?userId=${user.uid}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch subscription');
+      }
+      
+      const data = await response.json();
+      setSubscription(data.subscription);
+    } catch (error) {
+      console.error('Error fetching subscription:', error);
+      // Fallback to default state for new users
+      setSubscription({
+        userId: user.uid,
+        isSubscribed: false,
+        plan: 'free',
+        status: 'trial',
+        remainingGenerations: 3,
+        totalGenerations: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user?.uid]);
+
+  // Initialize subscription data when user changes
+  useEffect(() => {
+    fetchSubscription();
+  }, [fetchSubscription]);
+
+  // Check for successful checkout from URL parameters
+  useEffect(() => {
+    const checkCheckoutSuccess = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const checkoutSuccess = urlParams.get('checkout_success');
+      
+      if (checkoutSuccess === 'true' && user?.uid) {
+        // Wait a moment for webhook to process, then refresh
+        setTimeout(() => {
+          fetchSubscription();
+        }, 2000);
         
-        // In a real app, you would check with your backend to verify subscription
-        // For demo, we'll use localStorage to simulate subscription state
-        const storedSubscription = localStorage.getItem(`subscription_${user.uid}`);
-        
-        // If checkout was successful, mark as subscribed
-        if (checkoutSuccess === 'true' || storedSubscription) {
-          setIsSubscribed(true);
-          // Store subscription status
-          localStorage.setItem(`subscription_${user.uid}`, 'true');
-          // Reset counter since user is subscribed
-          setRemainingGenerations(999); // Unlimited for subscribers
-          
-          // Clean up URL parameters
-          if (checkoutSuccess) {
-            const url = new URL(window.location.href);
-            url.searchParams.delete('checkout_success');
-            window.history.replaceState({}, '', url.toString());
-          }
-        } else {
-          // Check remaining generations for free tier
-          const storedGenerations = localStorage.getItem(`generations_${user.uid}`);
-          if (storedGenerations) {
-            setRemainingGenerations(parseInt(storedGenerations));
-          } else {
-            // First time user
-            setRemainingGenerations(FREE_TIER_LIMIT);
-            localStorage.setItem(`generations_${user.uid}`, FREE_TIER_LIMIT.toString());
-          }
-          setIsSubscribed(false);
-        }
-      } catch (error) {
-        console.error('Error checking subscription status:', error);
-      } finally {
-        setIsLoading(false);
+        // Clean up URL parameters
+        const url = new URL(window.location.href);
+        url.searchParams.delete('checkout_success');
+        window.history.replaceState({}, '', url.toString());
       }
     };
 
-    checkSubscriptionStatus();
-  }, [user]);
+    if (user?.uid) {
+      checkCheckoutSuccess();
+    }
+  }, [user?.uid, fetchSubscription]);
 
   // Opens the checkout page
   const openCheckout = () => {
-    // Show the paywall modal if it's not already showing
     setShowPaywall(true);
-    
-    // In a production app, you would:
-    // 1. Generate a custom checkout URL with user data
-    // 2. Track the checkout attempt
-    // 3. Set up webhook to handle successful payments
-    
-    // Note: The actual window.open call is in the PaywallModal component
-    // to ensure users see the paywall info before proceeding to checkout
   };
   
   // Simulate a successful subscription (for demo/testing purposes only)
   const simulateSuccessfulSubscription = () => {
-    if (user) {
-      // Store subscription in localStorage
-      localStorage.setItem(`subscription_${user.uid}`, 'true');
-      // Update state
-      setIsSubscribed(true);
+    if (user?.uid && subscription) {
+      const updatedSubscription = {
+        ...subscription,
+        isSubscribed: true,
+        plan: 'monthly' as const,
+        status: 'active' as const,
+        remainingGenerations: 999,
+      };
+      setSubscription(updatedSubscription);
       setShowPaywall(false);
-      resetRemainingGenerations();
     }
   };
 
   // Reset the remaining generations (for subscribed users)
   const resetRemainingGenerations = () => {
-    if (user) {
-      if (isSubscribed) {
-        // Unlimited for subscribers
-        setRemainingGenerations(999);
-        // Clear any stored generation count for free users
-        localStorage.removeItem(`generations_${user.uid}`);
-      } else {
-        // Reset to free tier limit
-        setRemainingGenerations(FREE_TIER_LIMIT);
-        localStorage.setItem(`generations_${user.uid}`, FREE_TIER_LIMIT.toString());
-      }
+    if (subscription) {
+      const updated = {
+        ...subscription,
+        remainingGenerations: subscription.isSubscribed ? 999 : 3,
+      };
+      setSubscription(updated);
     }
   };
 
-  // Use one generation
-  const consumeGeneration = () => {
-    if (user && !isSubscribed) {
-      const newCount = Math.max(0, remainingGenerations - 1);
-      setRemainingGenerations(newCount);
-      localStorage.setItem(`generations_${user.uid}`, newCount.toString());
-      
+  // Consume one generation
+  const consumeGeneration = async () => {
+    if (!user?.uid || !subscription) return;
+
+    // Optimistic update for better UX
+    if (!subscription.isSubscribed) {
+      const newRemainingGenerations = Math.max(0, subscription.remainingGenerations - 1);
+      setSubscription({
+        ...subscription,
+        remainingGenerations: newRemainingGenerations,
+        totalGenerations: subscription.totalGenerations + 1,
+      });
+
       // Show paywall when user runs out of generations
-      if (newCount === 0) {
+      if (newRemainingGenerations === 0) {
         setShowPaywall(true);
       }
+    }
+
+    // Make API call to update database
+    try {
+      const response = await fetch('/api/subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user.uid }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to consume generation');
+      }
+
+      const data = await response.json();
+      
+      // Update with server response
+      setSubscription(prev => prev ? {
+        ...prev,
+        remainingGenerations: data.remainingGenerations,
+      } : null);
+      
+    } catch (error) {
+      console.error('Error consuming generation:', error);
+      // Revert optimistic update on error
+      fetchSubscription();
     }
   };
   
@@ -160,26 +184,25 @@ export const PaywallProvider = ({ children }: { children: ReactNode }) => {
 
   // Force refresh subscription status
   const refreshSubscriptionStatus = () => {
-    if (user) {
-      const storedSubscription = localStorage.getItem(`subscription_${user.uid}`);
-      if (storedSubscription) {
-        setIsSubscribed(true);
-        setRemainingGenerations(999);
-      }
-    }
+    fetchSubscription();
   };
+
+  // Derived values
+  const isSubscribed = subscription?.isSubscribed && subscription?.status === 'active' || false;
+  const remainingGenerations = subscription?.remainingGenerations || 0;
 
   const value = {
     isSubscribed,
     isLoading,
     remainingGenerations,
     showPaywall,
+    subscription,
     openCheckout,
     resetRemainingGenerations,
     consumeGeneration,
     closePaywall,
+    refreshSubscriptionStatus,
     simulateSuccessfulSubscription,
-    refreshSubscriptionStatus
   };
 
   return (

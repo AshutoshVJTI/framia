@@ -31,6 +31,22 @@ const PaywallModal = () => {
   
   // Add parameters for overlay mode and success redirect with checkout_success parameter
   const successUrl = `${origin}?checkout_success=true`;
+  
+  // Create checkout URLs with user data for webhook processing
+  const createCheckoutUrl = (baseUrl: string) => {
+    const url = new URL(baseUrl);
+    url.searchParams.set('embed', '1');
+    url.searchParams.set('logo', '0');
+    url.searchParams.set('success_url', successUrl);
+    
+    // Add user data for webhook processing
+    if (user?.uid) {
+      url.searchParams.set('checkout[custom][user_id]', user.uid);
+      url.searchParams.set('checkout[email]', user.email || '');
+    }
+    
+    return url.toString();
+  };
 
   // Handle successful checkout
   const handleCheckoutSuccess = useCallback(() => {
@@ -152,7 +168,7 @@ const PaywallModal = () => {
             </div>
 
             <a 
-              href={`${MONTHLY_CHECKOUT_URL}?embed=1&logo=0&success_url=${encodeURIComponent(successUrl)}`}
+              href={createCheckoutUrl(MONTHLY_CHECKOUT_URL)}
               className="lemonsqueezy-button w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold transition duration-200 hover:shadow-lg transform hover:-translate-y-1 text-center block"
               onClick={() => closePaywall()}
             >
@@ -160,7 +176,7 @@ const PaywallModal = () => {
             </a>
 
             <a 
-              href={`${WEEKLY_CHECKOUT_URL}?embed=1&logo=0&success_url=${encodeURIComponent(successUrl)}`}
+              href={createCheckoutUrl(WEEKLY_CHECKOUT_URL)}
               className="lemonsqueezy-button w-full py-2 px-4 border border-gray-300 text-gray-700 rounded-full font-medium transition duration-200 hover:bg-gray-50 text-center block"
               onClick={() => closePaywall()}
             >
