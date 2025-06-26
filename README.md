@@ -1,4 +1,4 @@
-# Product Photoshoot AI
+# Framia AI
 
 Transform your product photos into professional, ready-to-use images with AI.
 
