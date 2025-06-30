@@ -96,18 +96,18 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
 
   return (
     <motion.div 
-      className="bg-white rounded-xl shadow-md overflow-hidden"
+      className="bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="p-6 sm:p-8">
-        <div className="flex flex-wrap items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Your Results</h2>
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Your Results</h2>
           
-          <div className="flex items-center space-x-2 mt-3 sm:mt-0">
+          <div className="flex items-center space-x-2 w-full sm:w-auto">
             <button 
-              className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+              className={`flex-1 sm:flex-none px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
                 viewMode === 'side-by-side' 
                   ? 'bg-gray-800 text-white' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -117,7 +117,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
               Side by Side
             </button>
             <button 
-              className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+              className={`flex-1 sm:flex-none px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
                 viewMode === 'comparison' 
                   ? 'bg-gray-800 text-white' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -130,14 +130,14 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
         </div>
         
         {viewMode === 'side-by-side' ? (
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div className="flex flex-col">
-              <div className="mb-3 flex items-center justify-center">
-                <span className="inline-block py-1 px-3 bg-gray-100 text-gray-800 text-sm font-medium rounded-full">
+              <div className="mb-2 sm:mb-3 flex items-center justify-center">
+                <span className="inline-block py-1 px-2 sm:px-3 bg-gray-100 text-gray-800 text-xs sm:text-sm font-medium rounded-full">
                   Original Image
                 </span>
               </div>
-              <div className="relative w-full h-80 border border-gray-100 rounded-lg overflow-hidden bg-gray-50 shadow-sm">
+              <div className="relative w-full h-64 sm:h-80 border border-gray-100 rounded-lg overflow-hidden bg-gray-50 shadow-sm">
                 <Image
                   src={originalImage}
                   alt="Original product"
@@ -149,15 +149,15 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
             </div>
             
             <div className="flex flex-col">
-              <div className="mb-3 flex items-center justify-center">
+              <div className="mb-2 sm:mb-3 flex items-center justify-center">
                 <span className={`
-                  inline-block py-1 px-3 text-sm font-medium rounded-full
+                  inline-block py-1 px-2 sm:px-3 text-xs sm:text-sm font-medium rounded-full
                   bg-gradient-to-r ${styleGradients[styleName] || 'from-blue-500 to-blue-600'} text-white
                 `}>
                   Generated {styleNames[styleName] || styleName} Image
                 </span>
               </div>
-              <div className="relative w-full h-80 border border-gray-100 rounded-lg overflow-hidden bg-gray-50 shadow-sm">
+              <div className="relative w-full h-64 sm:h-80 border border-gray-100 rounded-lg overflow-hidden bg-gray-50 shadow-sm">
                 <Image
                   src={generatedImage}
                   alt="Generated product"
@@ -170,7 +170,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
           </div>
         ) : (
           <div 
-            className="relative w-full h-96 border border-gray-100 rounded-lg overflow-hidden bg-gray-50 shadow-sm select-none"
+            className="relative w-full h-64 sm:h-96 border border-gray-100 rounded-lg overflow-hidden bg-gray-50 shadow-sm select-none"
             onMouseDown={handleMouseDown}
             ref={containerRef}
           >
@@ -211,31 +211,31 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
             
             {/* Slider handle */}
             <div 
-              className="absolute top-1/2 transform -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center z-30 cursor-col-resize border-2 border-gray-200 hover:border-blue-400 transition-colors"
-              style={{ left: `calc(${comparisonPosition}% - 20px)` }}
+              className="absolute top-1/2 transform -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full shadow-lg flex items-center justify-center z-30 cursor-col-resize border-2 border-gray-200 hover:border-blue-400 transition-colors"
+              style={{ left: `calc(${comparisonPosition}% - 16px)` }}
             >
-              <svg className="w-4 h-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
               </svg>
             </div>
             
             {/* Labels */}
-            <div className="absolute top-4 left-4 py-1 px-3 bg-black/60 text-white text-xs font-medium rounded-full backdrop-blur-sm">
+            <div className="absolute top-2 sm:top-4 left-2 sm:left-4 py-1 px-2 sm:px-3 bg-black/60 text-white text-xs font-medium rounded-full backdrop-blur-sm">
               Original
             </div>
             
-            <div className="absolute top-4 right-4 py-1 px-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-medium rounded-full backdrop-blur-sm">
+            <div className="absolute top-2 sm:top-4 right-2 sm:right-4 py-1 px-2 sm:px-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-medium rounded-full backdrop-blur-sm">
               Generated
             </div>
           </div>
         )}
         
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center sm:justify-between">
+        <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4">
           <button
             onClick={() => downloadImage(generatedImage, `product-${styleName}-${Date.now()}.jpg`)}
             disabled={isDownloading}
             className={`
-              relative overflow-hidden group py-3 px-6 rounded-full font-semibold transition-all duration-300 flex items-center
+              relative overflow-hidden group py-2.5 sm:py-3 px-4 sm:px-6 rounded-full font-semibold transition-all duration-300 flex items-center w-full sm:w-auto
               ${isDownloading ? 
                 'bg-green-100 text-green-700 cursor-default' : 
                 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md hover:shadow-lg transform hover:-translate-y-1'
@@ -244,14 +244,14 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
           >
             {isDownloading ? (
               <>
-                <svg className="w-5 h-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
                 Downloading...
               </>
             ) : (
               <>
-                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
                 Download Generated Image
@@ -262,14 +262,14 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({
             )}
           </button>
           
-          <p className="text-sm text-gray-500 mt-4 sm:mt-0 text-center sm:text-right">
+          <p className="text-xs sm:text-sm text-gray-500 text-center sm:text-right">
             Generated using {styleNames[styleName] || styleName} style • AI-enhanced image
           </p>
         </div>
       </div>
       
-      <div className="bg-gray-50 px-6 py-4 border-t border-gray-100">
-        <p className="text-center text-gray-500 text-sm">
+      <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100">
+        <p className="text-center text-gray-500 text-xs sm:text-sm">
           Images are generated using AI and may vary in quality.
           <br className="hidden sm:inline" />
           You can use these images for your website, social media, or marketing materials.

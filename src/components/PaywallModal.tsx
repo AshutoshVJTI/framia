@@ -22,9 +22,9 @@ const PaywallModal = () => {
   const { user } = useAuth();
   const scriptLoaded = useRef(false);
   
-  // Lemon Squeezy checkout URLs
-  const MONTHLY_CHECKOUT_URL = "https://luneth.lemonsqueezy.com/buy/984911a0-577e-4a97-b8cc-3b76fe2b9665"; // Monthly plan
-  const WEEKLY_CHECKOUT_URL = "https://luneth.lemonsqueezy.com/buy/984911a0-577e-4a97-b8cc-3b76fe2b9665"; // Weekly plan (you'll need to create this)
+  // Lemon Squeezy checkout URLs - Replace with your actual product URLs
+  const WEEKLY_CHECKOUT_URL = "https://luneth.lemonsqueezy.com/buy/5fc864f2-03c2-43de-86b0-8dde4b387e13"; // Replace with actual weekly product ID
+  const MONTHLY_CHECKOUT_URL = "https://luneth.lemonsqueezy.com/buy/15341766-3040-432f-81d8-c5bf73949f58"; // Replace with actual monthly product ID
   
   // Get current origin for success redirect
   const origin = typeof window !== 'undefined' ? window.location.origin : '';

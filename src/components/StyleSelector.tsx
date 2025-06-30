@@ -131,19 +131,19 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Quality Selection - Only for Pro users */}
       {isSubscribed && (
         <div>
           <h3 className="text-sm font-light text-white mb-3">Quality</h3>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
             {qualityOptions.map((quality) => (
               <motion.div
                 key={quality.id}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className={`
-                  relative border rounded-lg p-3 cursor-pointer transition-all duration-200
+                  relative border rounded-lg p-2 sm:p-3 cursor-pointer transition-all duration-200
                   ${selectedQuality === quality.id
                     ? 'border-white bg-zinc-800/50' 
                     : 'border-zinc-700 hover:border-zinc-600'
@@ -152,7 +152,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
                 onClick={() => handleQualityClick(quality.id)}
               >
                 <div className="text-center">
-                  <h4 className={`font-medium text-sm ${selectedQuality === quality.id ? 'text-white' : 'text-gray-300'}`}>
+                  <h4 className={`font-medium text-xs sm:text-sm ${selectedQuality === quality.id ? 'text-white' : 'text-gray-300'}`}>
                     {quality.name}
                   </h4>
                   <p className={`text-xs mt-1 ${selectedQuality === quality.id ? 'text-gray-300' : 'text-gray-500'}`}>
@@ -164,8 +164,8 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
                 </div>
                 
                 {selectedQuality === quality.id && (
-                  <div className="absolute top-2 right-2 text-white">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="absolute top-1 sm:top-2 right-1 sm:right-2 text-white">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                   </div>
@@ -189,7 +189,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
                 whileHover={{ scale: isLocked ? 1 : 1.01 }}
                 whileTap={{ scale: isLocked ? 1 : 0.99 }}
                 className={`
-                  relative border rounded-lg p-4 cursor-pointer transition-all duration-200
+                  relative border rounded-lg p-3 sm:p-4 cursor-pointer transition-all duration-200
                   ${selectedStyle === style.id
                     ? 'border-white bg-zinc-800/50' 
                     : isLocked
@@ -201,7 +201,7 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
               >
                 <div className="flex items-center">
                   <div className={`
-                    flex items-center justify-center w-10 h-10 rounded-lg text-lg mr-3 relative
+                    flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-base sm:text-lg mr-2 sm:mr-3 relative
                     ${selectedStyle === style.id 
                       ? 'bg-white text-black' 
                       : 'bg-zinc-800 text-gray-400'
@@ -210,25 +210,25 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
                     {style.icon}
                     {isLocked && (
                       <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                         </svg>
                       </div>
                     )}
                   </div>
                   
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center">
-                      <h4 className={`font-medium ${selectedStyle === style.id ? 'text-white' : 'text-gray-300'}`}>
+                      <h4 className={`font-medium text-sm sm:text-base truncate ${selectedStyle === style.id ? 'text-white' : 'text-gray-300'}`}>
                         {style.name}
                       </h4>
                       {style.isPro && (
-                        <span className="ml-2 text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full font-medium">
+                        <span className="ml-2 text-xs bg-yellow-500/20 text-yellow-400 px-1.5 sm:px-2 py-0.5 rounded-full font-medium flex-shrink-0">
                           PRO
                         </span>
                       )}
                     </div>
-                    <p className={`text-sm ${selectedStyle === style.id ? 'text-gray-300' : 'text-gray-500'}`}>
+                    <p className={`text-xs sm:text-sm ${selectedStyle === style.id ? 'text-gray-300' : 'text-gray-500'}`}>
                       {style.description}
                     </p>
                     {isLocked && (
@@ -239,8 +239,8 @@ const StyleSelector: React.FC<StyleSelectorProps> = ({
                   </div>
                   
                   {selectedStyle === style.id && !isLocked && (
-                    <div className="ml-4 text-white">
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="ml-2 sm:ml-4 text-white flex-shrink-0">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
                     </div>
