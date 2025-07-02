@@ -150,7 +150,7 @@ const LandingComparisonSlider: React.FC<{
 
 export default function Home() {
   const { user, loading } = useAuth();
-  const { consumeGeneration, remainingGenerations, simulateSuccessfulSubscription, isSubscribed } = usePaywall();
+  const { consumeGeneration, remainingGenerations, isSubscribed } = usePaywall();
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string>('ecommerce');
@@ -183,7 +183,7 @@ export default function Home() {
     setSelectedQuality(savedQuality);
     setUseCache(savedCache);
     setApiLimit(savedLimit);
-  }, [user, simulateSuccessfulSubscription, isSubscribed]);
+  }, [user, isSubscribed]);
 
   const handleImageUpload = (file: File) => {
     setUploadedImage(file);

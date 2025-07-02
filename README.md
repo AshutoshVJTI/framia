@@ -99,6 +99,8 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
 NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+FIREBASE_CLIENT_EMAIL=your-firebase-client-email
+FIREBASE_PRIVATE_KEY=your-firebase-private-key
 OPENAI_API_KEY=your-openai-api-key
 LEMONSQUEEZY_API_KEY=your-lemonsqueezy-api-key
 LEMONSQUEEZY_STORE_ID=your-store-id
@@ -107,6 +109,8 @@ NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=your-nextauth-secret
 REDIS_URL=rediss://:your-upstash-token@your-upstash-host:port
 ```
+
+**Note:** Firebase Admin credentials (`FIREBASE_CLIENT_EMAIL` and `FIREBASE_PRIVATE_KEY`) are required for server-side operations. Get them from your Firebase project settings > Service accounts.
 
 ## Upstash Redis Integration
 - Sign up at [Upstash](https://upstash.com/) and create a Redis database.

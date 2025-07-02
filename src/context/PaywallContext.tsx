@@ -15,8 +15,6 @@ interface PaywallContextType {
   consumeGeneration: () => void;
   closePaywall: () => void;
   refreshSubscriptionStatus: () => void;
-  // For demo/testing only - remove in production
-  simulateSuccessfulSubscription: () => void;
 }
 
 const PaywallContext = createContext<PaywallContextType | undefined>(undefined);
@@ -103,21 +101,6 @@ export const PaywallProvider = ({ children }: { children: ReactNode }) => {
     setShowPaywall(true);
   };
   
-  // Simulate a successful subscription (for demo/testing purposes only)
-  const simulateSuccessfulSubscription = () => {
-    if (user?.uid && subscription) {
-      const updatedSubscription = {
-        ...subscription,
-        isSubscribed: true,
-        plan: 'monthly' as const,
-        status: 'active' as const,
-        remainingGenerations: 999,
-      };
-      setSubscription(updatedSubscription);
-      setShowPaywall(false);
-    }
-  };
-
   // Reset the remaining generations (for subscribed users)
   const resetRemainingGenerations = () => {
     if (subscription) {
@@ -146,6 +129,12 @@ export const PaywallProvider = ({ children }: { children: ReactNode }) => {
       if (newRemainingGenerations === 0) {
         setShowPaywall(true);
       }
+    } else {
+      // For subscribed users, just increment total generations (unlimited)
+      setSubscription({
+        ...subscription,
+        totalGenerations: subscription.totalGenerations + 1,
+      });
     }
 
     // Make API call to update database
@@ -164,10 +153,11 @@ export const PaywallProvider = ({ children }: { children: ReactNode }) => {
 
       const data = await response.json();
       
-      // Update with server response
+      // Update with server response (but keep unlimited for subscribed users)
       setSubscription(prev => prev ? {
         ...prev,
-        remainingGenerations: data.remainingGenerations,
+        remainingGenerations: prev.isSubscribed ? 999 : data.remainingGenerations,
+        totalGenerations: prev.totalGenerations + 1,
       } : null);
       
     } catch (error) {
@@ -202,7 +192,6 @@ export const PaywallProvider = ({ children }: { children: ReactNode }) => {
     consumeGeneration,
     closePaywall,
     refreshSubscriptionStatus,
-    simulateSuccessfulSubscription,
   };
 
   return (
