@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase-admin';
+import { getAdminDb } from '@/lib/firebase-admin';
 
 interface UserSubscription {
   userId: string;
@@ -20,6 +20,7 @@ interface UserSubscription {
 const adminSubscriptionDB = {
   async getUserSubscription(userId: string): Promise<UserSubscription | null> {
     try {
+      const adminDb = getAdminDb();
       const docRef = adminDb.collection('subscriptions').doc(userId);
       const docSnap = await docRef.get();
       
@@ -43,6 +44,7 @@ const adminSubscriptionDB = {
 
   async createUserSubscription(userId: string): Promise<UserSubscription> {
     try {
+      const adminDb = getAdminDb();
       const subscription = {
         userId,
         isSubscribed: false,
@@ -66,6 +68,7 @@ const adminSubscriptionDB = {
 
   async updateSubscription(userId: string, updates: Partial<UserSubscription>): Promise<void> {
     try {
+      const adminDb = getAdminDb();
       const docRef = adminDb.collection('subscriptions').doc(userId);
       await docRef.update({
         ...updates,
