@@ -183,18 +183,6 @@ export default function Home() {
     setSelectedQuality(savedQuality);
     setUseCache(savedCache);
     setApiLimit(savedLimit);
-    
-    // Expose the simulate subscription function for demo purposes
-    if (typeof window !== "undefined") {
-      window.simulateSubscription = () => {
-        if (user && user.uid) {
-          simulateSuccessfulSubscription();
-          alert('Subscription simulated! You now have unlimited generations.');
-        } else {
-          alert('User not found. Please sign in first.');
-        }
-      };
-    }
   }, [user, simulateSuccessfulSubscription, isSubscribed]);
 
   const handleImageUpload = (file: File) => {

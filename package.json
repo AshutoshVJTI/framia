@@ -11,7 +11,9 @@
   "dependencies": {
     "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "firebase": "^11.6.1",
+    "firebase-admin": "^13.4.0",
     "framer-motion": "^12.10.0",
+    "ioredis": "^5.6.1",
     "next": "15.3.2",
     "next-connect": "^1.0.0",
     "openai": "^4.97.0",

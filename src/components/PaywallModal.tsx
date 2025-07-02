@@ -53,11 +53,8 @@ const PaywallModal = () => {
     // Close the paywall
     closePaywall();
     
-    // Mark as subscribed and redirect with success parameter
+    // Redirect with success parameter to trigger subscription update
     if (user) {
-      localStorage.setItem(`subscription_${user.uid}`, 'true');
-      
-      // Redirect with success parameter to trigger subscription update
       const url = new URL(window.location.href);
       url.searchParams.set('checkout_success', 'true');
       window.location.href = url.toString();
